@@ -1,0 +1,380 @@
+<!--
+Dark Portfolio — single-file HTML (index.html)
+Features:
+ - Clean, dark aesthetic
+ - Modular `projects` array near the top of the <script> for easy additions
+ - Responsive CSS grid + hover animations
+ - Accessible keyboard focus states
+ - Optional project image or fallback icon
+
+How to use:
+ - Edit the `projects` array in the script below to add/remove projects.
+ - Each project should have: { id, title, desc, url, tags, img }
+ - Save as `index.html` and open in a browser. No build tools required.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portfolio -- NAME</title>
+  <meta name="description" content="A portfolio showcasing the works of Alpha-TesterMesser." />
+  <style>
+    :root{
+      --bg:#0b0f12;
+      --panel:#0f1620;
+      --muted:#9aa5b1;
+      --accent:#7c5cff;
+      --accent-2:#00d4ff;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --fw-regular: 400;
+      --fw-bold:700;
+      --max-width:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(124,92,255,0.08), transparent 8%),
+                  radial-gradient(900px 400px at 90% 90%, rgba(0,212,255,0.04), transparent 10%),
+                  var(--bg);
+      color: #e6eef6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:40px 20px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+
+    .shell{
+      width:100%;
+      max-width:var(--max-width);
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:28px;
+      align-items:start;
+    }
+
+    /* Left: content */
+    header{
+      grid-column:1/2;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .hero{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow: 0 6px 18px rgba(2,6,15,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .intro{
+      max-width:680px;
+    }
+    .name{
+      font-size:clamp(20px,3.4vw,28px);
+      font-weight:var(--fw-bold);
+      letter-spacing:-0.4px;
+      margin:0 0 6px 0;
+    }
+    .tagline{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .cta{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn{
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      border:none;
+      color:#071019;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:700;
+      text-decoration:none;
+      cursor:pointer;
+      box-shadow: 0 6px 20px rgba(124,92,255,0.08);
+    }
+    .btn.ghost{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);
+      padding:8px 12px;
+      border-radius:10px;
+    }
+
+    /* Projects grid */
+    .projects-wrap{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:14px;
+    }
+    @media (max-width:900px){
+      .shell{grid-template-columns:1fr;}
+      .projects-wrap{grid-template-columns:1fr;}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      padding:14px;
+      border-radius:12px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .card:focus-within, .card:hover{
+      transform: translateY(-6px);
+      box-shadow: 0 14px 40px rgba(2,6,15,0.6), 0 2px 10px rgba(124,92,255,0.06);
+    }
+    .thumb{
+      width:72px;
+      height:72px;
+      border-radius:10px;
+      background:var(--glass);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:var(--muted);
+      flex-shrink:0;
+    }
+    .meta{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:0;
+    }
+    .project-title{
+      font-size:15px;
+      margin:0;
+      font-weight:600;
+      color:#eaf1ff;
+      text-overflow:ellipsis;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+    .project-desc{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+    }
+    .tags{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .tag{
+      font-size:12px;
+      padding:6px 8px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.02);
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    /* Right column */
+    aside{
+      grid-column:2/3;
+      position:sticky;
+      top:34px;
+      height:max-content;
+    }
+    .about{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:14px;
+      padding:18px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .small{font-size:13px;color:var(--muted)}
+
+    /* search & utilities */
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:10px;
+    }
+    .search{
+      flex:1;
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.04);
+      padding:10px 12px;
+      border-radius:10px;
+      color:var(--muted);
+      outline:none;
+    }
+    .search:focus{box-shadow:0 6px 20px rgba(0,212,255,0.04)}
+
+    a.project-link{display:block;text-decoration:none}
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
+    footer{grid-column:1/3;margin-top:20px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="hero">
+        <div class="intro">
+          <h1 class="name">NAME</h1>
+          <p class="tagline">DESCRIPTION</p>
+        </div>
+        <div class="cta">
+          <a class="btn" href="#projects">Projects</a>
+          <a class="btn ghost" href="">Contact</a>
+        </div>
+      </div>
+
+      <div id="projects" style="margin-top:12px;">
+        <div class="controls">
+          <input id="q" class="search" placeholder="Search projects or tags..." aria-label="Search projects" />
+          <button id="clear" class="btn ghost" title="Clear search">Clear</button>
+        </div>
+
+        <div class="projects-wrap" id="projectsWrap" aria-live="polite" style="margin-top:12px"></div>
+      </div>
+    </header>
+
+    <aside>
+      <div class="about">
+        <p class="small">Quick facts</p>
+        <p style="margin:8px 0 6px 0;font-weight:600">FACT · FACT · FACT · FACT · FACT</p>
+        <p class="small">SMALL DESCRIPTION</p>
+        <div style="height:12px"></div>
+        <p class="small" style="margin-bottom:6px">Follow</p>
+        <div style="display:flex;gap:8px">
+          <a class="btn ghost" href="https://github.com/USERNAME">GitHub</a>
+        </div>
+      </div>
+    </aside>
+
+    <footer>
+      <div>© <span id="year"></span>USERNAME -- SLOGAN</div>
+    </footer>
+  </div>
+
+  <script>
+    // -----------------------------
+    // PROJECTS: add or edit entries here
+    // Each project: { id, title, desc, url, tags:[], img }
+    // img is optional — provide a URL to show an image in the thumb.
+    // -----------------------------
+    const projects = [
+      {
+        id: 'p1',
+        title: 'PROJECT NAME',
+        desc: 'CHAT DESCRIPTION',
+        url: 'https://example.com',
+        tags: ['TAG'],
+        img: ''
+      }
+    ];
+
+    // Utility: create a safe element with text
+    function t(tag, text, attrs){
+      const el = document.createElement(tag);
+      if(text) el.textContent = text;
+      if(attrs) Object.keys(attrs).forEach(k=>el.setAttribute(k, attrs[k]));
+      return el;
+    }
+
+    const projectsWrap = document.getElementById('projectsWrap');
+
+    function render(list){
+      projectsWrap.innerHTML = '';
+      if(list.length === 0){
+        projectsWrap.appendChild(t('div','No results found.', {class:'small'}));
+        return;
+      }
+      list.forEach(p => {
+        const link = document.createElement('a');
+        link.href = p.url || '#';
+        link.className = 'project-link';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+
+        const card = t('article', null, {class:'card', role:'group', 'aria-labelledby': 't-'+p.id});
+
+        const thumb = t('div', null, {class:'thumb'});
+        if(p.img){
+          const img = document.createElement('img');
+          img.src = p.img;
+          img.alt = p.title + ' thumbnail';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
+          img.style.borderRadius = '8px';
+          thumb.appendChild(img);
+        } else {
+          // fallback initials
+          const initials = p.title.split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+          thumb.textContent = initials;
+        }
+
+        const meta = t('div', null, {class:'meta'});
+        const title = t('h3', p.title, {class:'project-title', id:'t-'+p.id});
+        const desc = t('p', p.desc, {class:'project-desc'});
+        const tagsWr = t('div', null, {class:'tags'});
+        (p.tags || []).forEach(tag=>{
+          tagsWr.appendChild(t('span', tag, {class:'tag'}));
+        });
+
+        meta.appendChild(title);
+        meta.appendChild(desc);
+        meta.appendChild(tagsWr);
+
+        card.appendChild(thumb);
+        card.appendChild(meta);
+        link.appendChild(card);
+        projectsWrap.appendChild(link);
+      })
+    }
+
+    // initial render
+    render(projects);
+
+    // simple search/filter
+    const q = document.getElementById('q');
+    q.addEventListener('input', ()=>{
+      const v = q.value.trim().toLowerCase();
+      if(!v){ render(projects); return; }
+      const filtered = projects.filter(p=>{
+        return (
+          p.title.toLowerCase().includes(v) ||
+          p.desc.toLowerCase().includes(v) ||
+          (p.tags||[]).join(' ').toLowerCase().includes(v)
+        );
+      });
+      render(filtered);
+    });
+
+    document.getElementById('clear').addEventListener('click', ()=>{ q.value=''; q.dispatchEvent(new Event('input')); q.focus(); });
+
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // expose projects for debugging / easy editing in console
+    window.__PROJECTS = projects;
+  </script>
+</body>
+</html>
